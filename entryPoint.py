@@ -1,5 +1,5 @@
 import csv
-import pandas as pd
+import pandas 
 import re
 
 class Person:
@@ -27,8 +27,6 @@ with open('./data/titanic/train.csv', "r") as file:
         people.append(person)
 
 print()
-# data = pd.read_csv('./data/titanic/train.csv')
-# print(data.to_string())
 total = 0
 survived = 0
 males = 0
@@ -53,3 +51,9 @@ print("survived:",survived, "out of", total, "total,", round((survived/total)*10
 print("males survived:", males_survived_count, "out of", males, "total,", round((males_survived_count/males)*100, 2), "%")
 print("females survived:", females_survived_count, "out of", females, "total,", round((females_survived_count/females)*100, 2), "%") 
 print()
+
+
+
+data_frames = pandas.read_csv('./data/titanic/train.csv')
+print("rows, cols:", data_frames.shape) 
+print(data_frames.info())
