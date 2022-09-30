@@ -6,7 +6,7 @@ class Person:
     def __init__(self, id, survived, sex):
         self.id = id
         self.survived = survived
-        self.sex = sex
+        self.gender = gender
 
     def __str__(self):
         return f"{self.id},{self.survived},{self.sex}"
