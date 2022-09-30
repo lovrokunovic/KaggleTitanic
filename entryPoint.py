@@ -9,7 +9,7 @@ class Person:
         self.gender = gender
 
     def __str__(self):
-        return f"{self.id},{self.survived},{self.sex}"
+        return f"{self.id},{self.survived},{self.gender}"
 
 people = []
 with open('./data/titanic/train.csv', "r") as file:
@@ -27,6 +27,6 @@ with open('./data/titanic/train.csv', "r") as file:
        
         people.append(person)
 
-
+print(people[62])
 # data = pd.read_csv('./data/titanic/train.csv')
 # print(data.to_string())
