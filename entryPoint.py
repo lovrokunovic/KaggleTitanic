@@ -3,7 +3,7 @@ import pandas as pd
 import re
 
 class Person:
-    def __init__(self, id, survived, sex):
+    def __init__(self, id, survived, gender):
         self.id = id
         self.survived = survived
         self.gender = gender
