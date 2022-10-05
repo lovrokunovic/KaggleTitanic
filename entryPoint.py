@@ -2,72 +2,20 @@ import csv
 import pandas 
 import re
 
-class Person:
-    def __init__(self, id, survived, gender):
-        self.id = id
-        self.survived = survived
-        self.gender = gender
-
-    def __str__(self):
-        return f"id:{self.id}, survived: {self.survived}, gender: {self.gender}"
-
-
-people = []
-survived = []
-not_survived = []
-
-with open('./data/titanic/train.csv', "r") as file:
-    reader = csv.reader(file, delimiter="\t")
-    for i, line in enumerate(reader):
-        if i == 0 :
-            continue
-        # list to string conversion
-        stripped = line[0]
-        stripped = re.split(r',(?=[^\s]+)', stripped)
-        person = Person(stripped[0], int(stripped[1]), stripped[4])
-       
-        people.append(person)
-        if(person.survived):
-            survived.append(person)
-        else:
-            not_survived.append(person)
-        
-
-print()
-total = len(survived) + len(not_survived) # = i
-
-print("survived:",len(survived), "out of", total, "total,", round((len(survived)/total)*100, 2), "%")
-   
-       
-print()
-print()
-print()
-print()
-
-
-data_frame = pandas.read_csv('./data/titanic/train.csv')
-# print("rows, cols:", data_frame.shape) 
-# print(data_frame.info())
-
-print()
-print(data_frame.describe())
-data_frame = data_frame[["Survived", "Pclass", "Sex"]]
-result = data_frame.groupby(['Survived'])
-
+train_data = pandas.read_csv('./data/titanic/train.csv')
+train_data = train_data[["Survived", "Pclass", "Sex"]]
+result = train_data.groupby(['Survived'])
 survived = pandas.DataFrame()
 not_survived = pandas.DataFrame()
+
 for survived, group in result:
     if(survived == 0):
         not_survived = group
     elif(survived == 1):
         survived = group
 
-print(survived)
-print()
-print(not_survived)
-
-apriori_prob_survived = len(survived)/float(len(data_frame))
-apriori_prob_not_survived = len(not_survived)/float(len(data_frame))
+apriori_prob_survived = len(survived)/float(len(train_data))
+apriori_prob_not_survived = len(not_survived)/float(len(train_data))
 
 pclass_counts_not_survived = not_survived['Pclass'].value_counts()
 pclass_counts_survived = survived['Pclass'].value_counts()
@@ -75,21 +23,27 @@ pclass_counts_survived = survived['Pclass'].value_counts()
 sex_counts_not_survived = not_survived['Sex'].value_counts()
 sex_counts_survived = survived['Sex'].value_counts()
 
-
-
 pclass_counts_not_survived = dict(pclass_counts_not_survived)
 pclass_counts_survived = dict(pclass_counts_survived)
 
 sex_counts_not_survived = dict(sex_counts_not_survived)
 sex_counts_survived = dict(sex_counts_survived)
 
-print()
-print("Not survived:")
-print(pclass_counts_not_survived)
-print(sex_counts_not_survived)
+pclass_probs_not_survived = {key: value/float(len(not_survived)) for key, value in pclass_counts_not_survived.items()}
+pclass_probs_survived =  {key: value/float(len(survived)) for key, value in pclass_counts_survived.items()}
+sex_probs_not_survived = {key: value/float(len(not_survived)) for key, value in sex_counts_not_survived.items()}
+sex_probs_survived = {key: value/float(len(survived)) for key, value in sex_counts_survived.items()}
 
-print()
-print("Survived:")
-print(pclass_counts_survived)
-print(sex_counts_survived)
-print()
+test_data = pandas.read_csv('./data/titanic/test.csv')
+test_data = test_data[["PassengerId", "Pclass", "Sex"]]
+
+def naive_bayes_predict(row):
+    prob_not_survived = pclass_probs_not_survived[row.Pclass]*sex_probs_not_survived[row.Sex]*apriori_prob_not_survived
+    prob_survived = pclass_probs_survived[row.Pclass]*sex_probs_survived[row.Sex]*apriori_prob_survived
+    return 0 if prob_not_survived >= prob_survived else 1
+
+result_data = pandas.DataFrame(columns=['PassengerId', 'Survived'])
+for index, row in test_data.iterrows():
+    result = naive_bayes_predict(row)
+    result_data.loc[len(result_data)] = {'PassengerId': row.PassengerId, 'Survived': result}
+result_data.to_csv('./data/predictions/simple_naive_bayes_predictions.csv', index=False)
