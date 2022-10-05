@@ -56,7 +56,6 @@ test_data = test_data[["PassengerId", "Pclass", "Sex"]]
 # TODO overflows management using logarithms
 # return 0 if prediction is not_survived and 1 if prediction is survived (return class 0 or 1)
 def naive_bayes_predict(row):
-    print()
     # p(y0|x) = p(x|y0) * p(y0) = p(x1|y0)*p(x2|y0) * p(y0)
     # p(y0) == apriori_prob_not_survived
     # p(x1|y0) == pclass_probs_not_survived[row.Pclass]
@@ -75,11 +74,13 @@ def naive_bayes_predict(row):
     
     return 0 if prob_not_survived >= prob_survived else 1
 
-for index, row in test_data.iterrows():
-    # print(row)
-    passenger_id = row.PassengerId
-    result = naive_bayes_predict(row)
-    print(result)
-    print()
-    break
 
+result_data = pandas.DataFrame(columns=['PassengerId', 'Survived'])
+
+for index, row in test_data.iterrows():
+    result = naive_bayes_predict(row)
+    result_data.loc[len(result_data)] = {'PassengerId': row.PassengerId, 'Survived': result}
+    
+
+print(result_data)
+result_data.to_csv('./data/predictions/simple_naive_bayes_predictions.csv', index=False)
