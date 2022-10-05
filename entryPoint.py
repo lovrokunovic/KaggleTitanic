@@ -48,6 +48,9 @@ print()
 data_frame = pandas.read_csv('./data/titanic/train.csv')
 # print("rows, cols:", data_frame.shape) 
 # print(data_frame.info())
+
+print()
+print(data_frame.describe())
 data_frame = data_frame[["Survived", "Pclass", "Sex"]]
 result = data_frame.groupby(['Survived'])
 
@@ -72,6 +75,14 @@ pclass_counts_survived = survived['Pclass'].value_counts()
 sex_counts_not_survived = not_survived['Sex'].value_counts()
 sex_counts_survived = survived['Sex'].value_counts()
 
+
+
+pclass_counts_not_survived = dict(pclass_counts_not_survived)
+pclass_counts_survived = dict(pclass_counts_survived)
+
+sex_counts_not_survived = dict(sex_counts_not_survived)
+sex_counts_survived = dict(sex_counts_survived)
+
 print()
 print("Not survived:")
 print(pclass_counts_not_survived)
@@ -82,5 +93,3 @@ print("Survived:")
 print(pclass_counts_survived)
 print(sex_counts_survived)
 print()
-
-print(dict(sex_counts_survived))
